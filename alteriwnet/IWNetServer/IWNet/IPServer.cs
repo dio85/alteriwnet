@@ -75,15 +75,8 @@ namespace IWNetServer
             writer.Write((byte)0);
             writer.Write((byte)Sequence);
 
-            if (true)
-            {
-                // 3 odd bytes
-                writer.Write(new byte[] { 0x00, 0x14, 0x1B });
-            }
-            else
-            {
-                writer.Write(new byte[] { 0x00, 0x14, 0x00 });
-            }
+            // 3 odd bytes
+            writer.Write(new byte[] { 0x00, 0x14, 0x1B });
 
             // IP address
             writer.Write(Source.Address.GetAddressBytes().Reverse().ToArray());
@@ -134,7 +127,6 @@ namespace IWNetServer
             {
                 Log.Debug("Handling IP request from " + request.XUID.ToString("X16"));
 
-                bool breakGame = false;
                 bool breakNAT = false;
 
                 if (!Client.IsHostAllowed(request.XUID))

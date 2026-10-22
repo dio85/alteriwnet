@@ -335,8 +335,8 @@ namespace IWNetServer
                     return;
                 }
 
-                long realID = (0x0110000100000000 | reader.ReadInt32());
-                long fakeID = (0x0110000100000000 | reader.ReadInt32());
+                long realID = (0x0110000100000000L | (uint)reader.ReadInt32());
+                long fakeID = (0x0110000100000000L | (uint)reader.ReadInt32());
 
                 if (realID == fakeID)
                 {

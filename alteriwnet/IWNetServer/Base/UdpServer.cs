@@ -31,12 +31,38 @@ namespace IWNetServer
         {
             if (_rsa == null)
             {
-                //_rsa = new RSACryptoServiceProvider(2048);
-                //_rsa.FromXmlString(File.ReadAllText("key-private.xml"));
+                LoadPrivateKey();
             }
 
             _thread = new Thread(new ThreadStart(Run));
             _thread.Start();
+        }
+
+        /// <summary>
+        /// Loads the private key that is used to decrypt encrypted packets.
+        /// The key is optional: without it encrypted packets are rejected.
+        /// </summary>
+        private void LoadPrivateKey()
+        {
+            const string keyFile = "key-private.xml";
+
+            if (!File.Exists(keyFile))
+            {
+                Log.Info("No private key found, encrypted packets will not be accepted.");
+                return;
+            }
+
+            try
+            {
+                _rsa = new RSACryptoServiceProvider();
+                _rsa.FromXmlString(File.ReadAllText(keyFile));
+            }
+            catch (Exception e)
+            {
+                _rsa = null;
+
+                Log.Error(string.Format("Unable to load the private key '{0}': {1}", keyFile, e.ToString()));
+            }
         }
 
         private void Run()
@@ -73,6 +99,11 @@ namespace IWNetServer
 
                     if (buffer[0] == 0xFE)
                     {
+                        if (_rsa == null)
+                        {
+                            throw new InvalidOperationException("Received an encrypted packet, but no private key is loaded.");
+                        }
+
                         var cryptBuffer = new byte[bytes - 1];
                         Array.Copy(buffer, 1, cryptBuffer, 0, cryptBuffer.Length);
 

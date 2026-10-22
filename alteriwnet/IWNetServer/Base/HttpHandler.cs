@@ -49,8 +49,6 @@ namespace IWNetServer
             }
         }
 
-        static string _keyXML = "";
-
         public void OnResponse(HttpListenerContext context)
         {
             try
@@ -318,8 +316,6 @@ namespace IWNetServer
 
                 return doc.ToString();
             }
-
-            return "<Servers Count=\"0\"></Servers>";
         }
 
         private bool FilterMatches(Dictionary<string, string> data, Dictionary<string, string> filter)

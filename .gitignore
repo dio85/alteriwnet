@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+Backup/
+UpgradeLog.htm
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.log

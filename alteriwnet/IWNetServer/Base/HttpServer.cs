@@ -86,6 +86,26 @@ namespace IWNetServer
             return (connections[client] <= MAX_CONNECTIONS_PER_5_SECONDS);
         }
 
+        /// <summary>
+        /// Builds a stable numeric key for an IP address. It is used to
+        /// identify clients for the connection flood protection.
+        /// </summary>
+        private static long GetAddressKey(IPAddress address)
+        {
+            byte[] bytes = address.GetAddressBytes();
+
+            // The address family is mixed in so that IPv4 and IPv6 addresses
+            // can never end up with the same key.
+            long key = (long)address.AddressFamily;
+
+            foreach (byte b in bytes)
+            {
+                key = (key << 8) | b;
+            }
+
+            return key;
+        }
+
         public void Listen()
         {
             bool done = false;
@@ -100,7 +120,8 @@ namespace IWNetServer
                 {
                     WriteLog("Waiting for connection...");
                     var client = listener.AcceptTcpClient();
-                    var ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.Address;
+                    var remoteEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+                    var ip = GetAddressKey(remoteEndPoint.Address);
 
                     if (IncreaseConnections(ip))
                     {
